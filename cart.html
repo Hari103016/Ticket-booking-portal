@@ -1,0 +1,71 @@
+<!-- cart.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart - Ticket Booking</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+</head>
+<body>
+  <div class="container mt-5">
+    <h2>🛒 Your Cart</h2>
+    <table class="table mt-4">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Qty</th>
+          <th>Price</th>
+          <th>Total</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="cartTable"></tbody>
+    </table>
+    <div class="text-end">
+      <h4 id="grandTotal">Total: ₹0</h4>
+      <button class="btn btn-success" onclick="checkout()">Pay Now</button>
+    </div>
+  </div>
+  <script>
+    const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartTable = document.getElementById("cartTable");
+    let total = 0;
+
+    const renderCart = () => {
+      cartTable.innerHTML = "";
+      total = 0;
+
+      cartItems.forEach((item, index) => {
+        const row = document.createElement("tr");
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+        row.innerHTML = `
+          <td>${item.title}</td>
+          <td>${item.quantity}</td>
+          <td>₹${item.price}</td>
+          <td>₹${subtotal}</td>
+          <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">Remove</button></td>
+        `;
+        cartTable.appendChild(row);
+      });
+      document.getElementById("grandTotal").innerText = `Total: ₹${total}`;
+    };
+
+    const removeItem = (index) => {
+      cartItems.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cartItems));
+      renderCart();
+    };
+
+    const checkout = () => {
+      if (cartItems.length === 0) return alert("Cart is empty!");
+      alert(`✅ Payment of ₹${total} successful! Booking confirmed.`);
+      localStorage.removeItem("cart");
+      window.location.href = "index.html";
+    };
+
+    renderCart();
+  </script>
+</body>
+</html>
